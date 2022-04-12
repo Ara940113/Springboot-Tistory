@@ -32,6 +32,8 @@ public class User {
     @Column(length = 20, nullable = false, unique = true)
     private String username;
 
+    // private String role; // admin, mansger, guest, user
+
     // 1234 - > SHA256(해시 알고리즘) ->AB4539GDUF3AE -> 이렇게 안하면 시큐리티가 거부
     @Column(length = 100, nullable = false) // 디비에 들어가는 해시 길이가 있으니 길이를 100으로 바꾼다
     private String password;
