@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -16,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import site.metacoding.blogv3.domain.user.UserRepository;
 import site.metacoding.blogv3.handler.ex.CustomException;
 import site.metacoding.blogv3.service.UserService;
-import site.metacoding.blogv3.web.dto.ResponseDto;
 import site.metacoding.blogv3.web.dto.user.JoinReqDto;
 
 @RequiredArgsConstructor
@@ -37,9 +38,11 @@ public class UserController {
         return "/user/joinForm";
     }
 
-    @GetMapping({ "/find-pw" })
-    public String findPw() {
-        return "/user/findPw";
+    @GetMapping("/api/user/username/same-check") // 체크하는 동사는 안적는게 좋지만 어쩔수없이 적자! 확인은 해야하니까
+    public ResponseEntity<?> usernameSameCheck(String username) {
+        boolean isNotSame = userService.유저네임중복체크(username); // true 같지 않다
+        return new ResponseEntity<>(isNotSame, HttpStatus.OK);
+
     }
 
     @PostMapping({ "/join" })
@@ -67,9 +70,4 @@ public class UserController {
         return "redirect:/login-form";
     }
 
-    @GetMapping("/api/user/username/same-check")
-    public @ResponseBody ResponseDto<String> sameCheck(String username) {
-        String data = userService.유저네임중복검사(username);
-        return new ResponseDto<String>(1, "통신성공", data);
-    }
 }

@@ -1,5 +1,7 @@
 package site.metacoding.blogv3.service;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +26,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    @Transactional
-    public String 유저네임중복검사(String username) {
-        User userEntity = userRepository.mUsernameSameCheck(username);
+    public boolean 유저네임중복체크(String username) {
+        Optional<User> userOp = userRepository.findByUsername(username);
 
-        if (userEntity == null) {
-            return "없어";
+        if (userOp.isPresent()) {
+            return false;
         } else {
-            return "있어";
+            return true;
         }
     }
 }
