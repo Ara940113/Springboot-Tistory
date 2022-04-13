@@ -57,7 +57,8 @@ public class UserController {
         return "redirect:/login-form";
     }
 
-    @GetMapping("/api/user/username/same-check") // 체크하는 동사는 안적는게 좋지만 어쩔수없이 적자! 확인은 해야하니까
+    // 유저네임 중복체크
+    @GetMapping("/api/user/username-same-check") // 체크하는 동사는 안적는게 좋지만 어쩔수없이 적자! 확인은 해야하니까
     public ResponseEntity<?> usernameSameCheck(String username) {
         boolean isNotSame = userService.유저네임중복체크(username); // true 같지 않다
         return new ResponseEntity<>(isNotSame, HttpStatus.OK);
