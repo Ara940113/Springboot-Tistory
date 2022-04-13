@@ -2,16 +2,19 @@
 
 <div class="container">
     <div class="my_auth_box">
-        <div="" class="my_auth_form_box">
+        <div class="my_auth_form_box">
             <div class="my_auth_form_box_title">Kstory</div>
-            <form action="/join" method="post">
-                <input class="my_auth_form_box_input" type="text" name="username" placeholder="유저네임" maxlength="20"
-                    required />
-                <input class="my_auth_form_box_input" type="password" name="password" placeholder="비밀번호" maxlength="20"
-                    required />
-                <input class="my_auth_form_box_input" type="password" name="" placeholder="비밀번호 확인" maxlength="20"
-                    required />
-                <input class="my_auth_form_box_input" type="text" name="email" placeholder="이메일" maxlength="60"
+            <div class="my_error_box my_hidden">
+
+            </div>
+            <form action="/join" method="post" onsubmit="return validation()">
+                <input id="username" class="my_auth_form_box_input" type="text" name="username" placeholder="ID"
+                    maxlength="20" required />
+                <input id="password" class="my_auth_form_box_input" type="password" name="password"
+                    placeholder="Password" maxlength="20" required />
+                <input id="same-password" class="my_auth_form_box_input" type="password" name=""
+                    placeholder="Password Check" maxlength="20" required />
+                <input class="my_auth_form_box_input" type="email" name="email" placeholder="E-mail" maxlength="60"
                     required />
                 <button type="submit" class="my_secondary_btn">회원가입</button>
             </form>
@@ -19,8 +22,67 @@
                 <div><a href="/login-form">로그인</a></div>
                 <div>비밀번호 찾기</div>
             </div>
+        </div>
     </div>
 </div>
-</div>
+
+<script>
+
+    let vaild = {
+        state: false,
+        password: "",
+        username: "",
+        email: ""
+    }
+
+    $("#same-password").keyup((event) => {
+        passwordSameCheck();
+    });
+
+    function validation() {
+        if (vaild.state === false) {
+            $(".my_error_box").text(vaild.password + "" + vaild.username + "" + vaild.email);
+            $(".my_error_box").removeClass("my_hidden");
+
+        }
+        return vaild.state;
+    }
+
+    function passwordSameCheck() {
+        // 1. password 값 찾기
+        let password = $("#password").val();
+
+        // 2. same-password 값 찾기
+        let samePassword = $("#same-password").val();
+
+        // 3. 두개의 값을 비교하기
+        if (password == samePassword) {
+            vaild.password = "패스워드가 동일합니다.";
+            isValid = true;
+        } else {
+            vaild.password = "패스워드가 동일하지 않습니다.";
+            vaild.state = false;
+        }
+
+    }
+
+</script>
+
+<script>
+    async function usernameSameCheck(username) {
+        let response = await fetch(`/api/user/username/same-check?username=${username}`);
+        let responseJson = await response.json();
+        //console.log(responseJson);
+        if (responseJson.data == "있어") {
+            alert("해당 아이디를 사용할 수 없습니다.");
+            let prevUsername = $("#username").val().slice(0, -1);
+            $("#username").val(prevUsername);
+        }
+    }
+    $("#username").keyup((event) => {
+        //console.log(event.target.value);
+        usernameSameCheck(event.target.value);
+    });
+</script>
 
 {{>/layout/footer}}

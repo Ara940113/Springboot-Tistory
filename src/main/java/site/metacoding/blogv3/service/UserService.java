@@ -23,4 +23,15 @@ public class UserService {
         user.setPassword(encPassword);
         userRepository.save(user);
     }
+
+    @Transactional
+    public String 유저네임중복검사(String username) {
+        User userEntity = userRepository.mUsernameSameCheck(username);
+
+        if (userEntity == null) {
+            return "없어";
+        } else {
+            return "있어";
+        }
+    }
 }

@@ -10,10 +10,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
+import site.metacoding.blogv3.domain.user.UserRepository;
 import site.metacoding.blogv3.handler.ex.CustomException;
 import site.metacoding.blogv3.service.UserService;
+import site.metacoding.blogv3.web.dto.ResponseDto;
 import site.metacoding.blogv3.web.dto.user.JoinReqDto;
 
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class UserController {
 
     // DI
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @GetMapping({ "/login-form" })
     public String loginForm() {
@@ -31,6 +35,11 @@ public class UserController {
     @GetMapping({ "/join-form" })
     public String joinForm() {
         return "/user/joinForm";
+    }
+
+    @GetMapping({ "/find-pw" })
+    public String findPw() {
+        return "/user/findPw";
     }
 
     @PostMapping({ "/join" })
@@ -58,4 +67,9 @@ public class UserController {
         return "redirect:/login-form";
     }
 
+    @GetMapping("/api/user/username/same-check")
+    public @ResponseBody ResponseDto<String> sameCheck(String username) {
+        String data = userService.유저네임중복검사(username);
+        return new ResponseDto<String>(1, "통신성공", data);
+    }
 }
