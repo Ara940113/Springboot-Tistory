@@ -18,7 +18,10 @@ import lombok.RequiredArgsConstructor;
 import site.metacoding.blogv3.domain.user.UserRepository;
 import site.metacoding.blogv3.handler.ex.CustomException;
 import site.metacoding.blogv3.service.UserService;
+import site.metacoding.blogv3.util.UtilValid;
+import site.metacoding.blogv3.util.email.EmailUtil;
 import site.metacoding.blogv3.web.dto.user.JoinReqDto;
+import site.metacoding.blogv3.web.dto.user.PasswordResetReqDto;
 
 @RequiredArgsConstructor
 @Controller
@@ -38,6 +41,22 @@ public class UserController {
         return "/user/joinForm";
     }
 
+    @GetMapping("/user/password-reset-form")
+    public String passwordResetForm() {
+        return "/user/passwordResetForm";
+    }
+
+    // 비밀번호 찾기
+    @PostMapping("/user/password-reset")
+    public String passwordReset(@Valid PasswordResetReqDto passwordResetReqDto, BindingResult bindingResult) {
+
+        UtilValid.요청에러처리(bindingResult);
+
+        userService.패스워드초기화(passwordResetReqDto);
+
+        return "redirect:/login-form";
+    }
+
     @GetMapping("/api/user/username/same-check") // 체크하는 동사는 안적는게 좋지만 어쩔수없이 적자! 확인은 해야하니까
     public ResponseEntity<?> usernameSameCheck(String username) {
         boolean isNotSame = userService.유저네임중복체크(username); // true 같지 않다
@@ -54,15 +73,7 @@ public class UserController {
         // 그래서 Dto가 필요하다!!
         // BindingResult는 무조건 내가 쓸 Dto 뒤에 와야한다!!
 
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errorMap = new HashMap<>();
-            for (FieldError fe : bindingResult.getFieldErrors()) {
-                // System.out.println(fe.getField());
-                // System.out.println(fe.getDefaultMessage());
-                errorMap.put(fe.getField(), fe.getDefaultMessage());
-            } // 핵심로직이 아닌 부가적인 코드 (AOP처리 가능 - 공통로직 처리)
-            throw new CustomException(errorMap.toString());
-        }
+        UtilValid.요청에러처리(bindingResult);
 
         // 핵심로직!! 회원가입을 하는 것@@!!!
         userService.회원가입(joinReqDto.toEntity());
